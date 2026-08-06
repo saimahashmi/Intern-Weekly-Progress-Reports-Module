@@ -32,4 +32,4 @@ No installation needed — just open `index.html` in any browser.
 HTML5 · CSS3 (Custom Properties, Flexbox/Grid) · Vanilla JavaScript (DOM API, Blob API, `localStorage`)
 
 ## Author
-Saima — Frontend Developer
+Saima Hashmi — Frontend Developer
