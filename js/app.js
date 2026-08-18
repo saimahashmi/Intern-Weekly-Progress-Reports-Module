@@ -1,9 +1,8 @@
 /**
  * Intern Management System - Weekly Progress & Reports Module (SafeX Edition)
  * Main Application Logic (Vanilla JavaScript ES6)
- * Features: Chart.js Completion Overview, PDF Export (jsPDF + autotable), 
- * Client-Side Pagination, Single-Arrow Sorting, Consolidated Controls, 
- * Full CRUD Operations, Excel/CSV Export, and Toasts.
+ * Performance Optimized: Dynamic lazy-loading of PDF libraries, deferred Chart rendering,
+ * non-blocking main-thread initial pass, single-arrow sorting, CRUD, & pagination.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,8 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
       taskEditingId: null,
       taskDeletingId: null,
 
-      // Chart Reference
-      chartInstance: null
+      // Chart & Lazy Loading State
+      chartInstance: null,
+      pdfLibrariesLoaded: false,
+      pdfLibrariesLoading: false
     };
 
     // ------------------------------------------------------------------------
@@ -116,7 +117,59 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ------------------------------------------------------------------------
-    // 3. Toast Notification Manager
+    // 3. Dynamic Script Loader Utility (Lazy-Loading Heavy Libraries)
+    // ------------------------------------------------------------------------
+    /**
+     * Dynamically injects a <script> tag into document.head and resolves on load.
+     * @param {string} src - Script CDN URL
+     * @returns {Promise<void>}
+     */
+    function loadScript(src) {
+      return new Promise((resolve, reject) => {
+        // Check if script is already present
+        if (document.querySelector(`script[src="${src}"]`)) {
+          resolve();
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+        document.head.appendChild(script);
+      });
+    }
+
+    /**
+     * Lazy loads html2canvas, jsPDF, and jsPDF-AutoTable on-demand.
+     */
+    async function ensurePdfLibrariesLoaded() {
+      if (state.pdfLibrariesLoaded) return true;
+      if (state.pdfLibrariesLoading) return false;
+
+      state.pdfLibrariesLoading = true;
+      try {
+        // Load html2canvas and jsPDF concurrently
+        await Promise.all([
+          loadScript('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),
+          loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')
+        ]);
+        // Load autotable after jsPDF
+        await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js');
+
+        state.pdfLibrariesLoaded = true;
+        state.pdfLibrariesLoading = false;
+        return true;
+      } catch (err) {
+        state.pdfLibrariesLoading = false;
+        console.error('Error lazy loading PDF libraries:', err);
+        throw err;
+      }
+    }
+
+    // ------------------------------------------------------------------------
+    // 4. Toast Notification Manager
     // ------------------------------------------------------------------------
     function showToast(message, type = 'success', duration = 3200) {
       try {
@@ -152,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 4. Theme Management (Light / Dark Mode)
+    // 5. Theme Management (Light / Dark Mode)
     // ------------------------------------------------------------------------
     function initTheme() {
       try {
@@ -183,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       localStorage.setItem('app-theme', theme);
 
-      // Update Chart.js colors on theme switch
       if (state.chartInstance) {
         updateChartColors();
       }
@@ -196,13 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 5. Chart.js Completion Overview Manager
+    // 6. Chart.js Completion Overview Manager (Deferred Execution)
     // ------------------------------------------------------------------------
-    /**
-     * Computes completion percentage per week for the currently filtered dataset.
-     */
     function computeWeeklyCompletionData() {
-      // Collect unique weeks present in filtered dataset or default 1-4
       let weekNumbers = Array.from(new Set(state.filteredTasks.map(t => t.weekNumber))).sort((a, b) => a - b);
       if (weekNumbers.length === 0) {
         weekNumbers = [1, 2, 3, 4];
@@ -220,8 +268,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Initializes or updates Chart.js bar chart instance.
+     * Deferred Chart rendering via requestAnimationFrame to avoid main-thread blocking on initial load.
      */
+    function scheduleChartUpdate() {
+      requestAnimationFrame(() => {
+        initOrUpdateChart();
+      });
+    }
+
     function initOrUpdateChart() {
       try {
         if (typeof Chart === 'undefined') return;
@@ -246,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
           state.chartInstance.options.scales.y.ticks.color = textColor;
           state.chartInstance.options.scales.x.grid.color = gridColor;
           state.chartInstance.options.scales.y.grid.color = gridColor;
-          state.chartInstance.update();
+          state.chartInstance.update('none'); // Update without animation for max performance
         } else {
           const ctx = canvas.getContext('2d');
           state.chartInstance = new Chart(ctx, {
@@ -303,7 +357,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 6. Data Filtering & Searching
+    // 7. Data Filtering & Searching
     // ------------------------------------------------------------------------
     function applyFilters() {
       try {
@@ -325,10 +379,8 @@ document.addEventListener('DOMContentLoaded', () => {
           return matchesWeek && matchesStatus && matchesSearch;
         });
 
-        // Reset pagination to page 1 on filter changes
         state.currentPage = 1;
 
-        // Re-apply active column sorting if set
         if (state.sortKey && state.sortDir !== 'none') {
           sortData(state.sortKey, false);
         } else {
@@ -340,13 +392,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 7. Data Sorting & Single Arrow Indicators
+    // 8. Data Sorting & Single Arrow Indicators
     // ------------------------------------------------------------------------
     function sortData(key, toggleDirection = true) {
       try {
         if (toggleDirection) {
           if (state.sortKey === key) {
-            // Cycle: asc -> desc -> none
             if (state.sortDir === 'asc') {
               state.sortDir = 'desc';
             } else if (state.sortDir === 'desc') {
@@ -412,7 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 8. Client-Side Pagination Manager
+    // 9. Client-Side Pagination Manager
     // ------------------------------------------------------------------------
     function getPaginatedTasks() {
       const start = (state.currentPage - 1) * state.rowsPerPage;
@@ -425,7 +476,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalItems = state.filteredTasks.length;
         const totalPages = Math.ceil(totalItems / state.rowsPerPage) || 1;
 
-        // Ensure currentPage is within valid bounds
         if (state.currentPage > totalPages) {
           state.currentPage = totalPages;
         }
@@ -433,7 +483,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const startItem = totalItems === 0 ? 0 : (state.currentPage - 1) * state.rowsPerPage + 1;
         const endItem = Math.min(state.currentPage * state.rowsPerPage, totalItems);
 
-        // Update counter text
         if (elements.showingCount) {
           elements.showingCount.textContent = `Showing ${startItem}-${endItem} of ${totalItems} entries (${state.tasks.length} total)`;
         }
@@ -442,13 +491,14 @@ document.addEventListener('DOMContentLoaded', () => {
         elements.paginationButtons.innerHTML = '';
 
         if (totalPages <= 1) {
-          return; // No prev/next buttons needed for single page
+          return;
         }
 
         // Prev Button
         const prevBtn = document.createElement('button');
         prevBtn.className = 'page-btn';
         prevBtn.textContent = '« Prev';
+        prevBtn.ariaLabel = 'Previous Page';
         prevBtn.disabled = state.currentPage === 1;
         prevBtn.addEventListener('click', () => {
           if (state.currentPage > 1) {
@@ -463,6 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const pageBtn = document.createElement('button');
           pageBtn.className = `page-btn ${i === state.currentPage ? 'active' : ''}`;
           pageBtn.textContent = i;
+          pageBtn.ariaLabel = `Page ${i}`;
           pageBtn.addEventListener('click', () => {
             state.currentPage = i;
             render();
@@ -474,6 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nextBtn = document.createElement('button');
         nextBtn.className = 'page-btn';
         nextBtn.textContent = 'Next »';
+        nextBtn.ariaLabel = 'Next Page';
         nextBtn.disabled = state.currentPage === totalPages;
         nextBtn.addEventListener('click', () => {
           if (state.currentPage < totalPages) {
@@ -489,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 9. CRUD Operations (Add, Edit, Delete)
+    // 10. CRUD Operations (Add, Edit, Delete)
     // ------------------------------------------------------------------------
     function openTaskModal(taskToEdit = null) {
       clearFormErrors();
@@ -637,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 10. PDF Export Generator (jsPDF + html2canvas + jspdf-autotable)
+    // 11. PDF Export Generator (Lazy-Loaded Heavy Libraries)
     // ------------------------------------------------------------------------
     async function exportToPDF() {
       try {
@@ -648,21 +700,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set Loading Button State
         if (elements.exportPdfBtn) elements.exportPdfBtn.disabled = true;
-        if (elements.pdfBtnText) elements.pdfBtnText.textContent = 'Generating PDF...';
+        if (elements.pdfBtnText) elements.pdfBtnText.textContent = state.pdfLibrariesLoaded ? 'Generating PDF...' : 'Loading libraries...';
 
-        // Wait brief delay for DOM stability
-        await new Promise(r => setTimeout(r, 100));
+        // Lazy-load PDF libraries dynamically if not already cached
+        if (!state.pdfLibrariesLoaded) {
+          try {
+            await ensurePdfLibrariesLoaded();
+          } catch (loadErr) {
+            showToast('Failed to load PDF libraries. Check internet connection.', 'error');
+            return;
+          }
+        }
+
+        if (elements.pdfBtnText) elements.pdfBtnText.textContent = 'Generating PDF...';
+        await new Promise(r => setTimeout(r, 60)); // Allow UI tick
 
         const { jsPDF } = window.jspdf;
         if (!jsPDF) {
-          throw new Error('jsPDF library not loaded');
+          throw new Error('jsPDF library not initialized');
         }
 
         const doc = new jsPDF('p', 'mm', 'a4');
         const timestamp = new Date().toISOString().slice(0, 10);
 
         // 1. SafeX Branded Header Box
-        doc.setFillColor(2, 132, 199); // #0284c7 (SafeX Primary)
+        doc.setFillColor(2, 132, 199);
         doc.rect(0, 0, 210, 26, 'F');
 
         doc.setTextColor(255, 255, 255);
@@ -672,7 +734,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
-        doc.text(`Generated: ${timestamp} | SafeX Management System`, 140, 16);
+        doc.text(`Generated: ${timestamp} | SafeX Management System`, 130, 16);
 
         // 2. Summary Sub-header Box
         doc.setFillColor(241, 245, 249);
@@ -755,7 +817,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 11. CSV / Excel Export Scope Handler
+    // 12. CSV / Excel Export Scope Handler
     // ------------------------------------------------------------------------
     function openExportModal() {
       elements.exportModal.classList.add('active');
@@ -911,7 +973,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 12. Main Render Loop
+    // 13. Main Render Loop (Non-blocking Deferred Chart Update)
     // ------------------------------------------------------------------------
     function render() {
       try {
@@ -928,8 +990,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (elements.statCompletedTasks) elements.statCompletedTasks.textContent = completedCount;
         if (elements.statActiveTasks) elements.statActiveTasks.textContent = activeCount;
 
-        // 2. Chart Overview Render Pass
-        initOrUpdateChart();
+        // 2. Schedule Non-blocking Chart Render Pass
+        scheduleChartUpdate();
 
         // 3. Handle Empty State vs Table Visibility
         if (totalCount === 0) {
@@ -989,7 +1051,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elements.tableBody.appendChild(fragment);
 
-        // 5. Render Pagination Controls & Sort Arrow Indicators
+        // 5. Render Pagination Controls & Sort Indicators
         renderPaginationControls();
         updateSortIndicators();
 
@@ -1009,7 +1071,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 13. Event Listeners Setup
+    // 14. Event Listeners Setup
     // ------------------------------------------------------------------------
     function setupEventListeners() {
       // Filter Event Listeners
@@ -1132,7 +1194,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ------------------------------------------------------------------------
-    // 14. App Initialization
+    // 15. App Initialization
     // ------------------------------------------------------------------------
     initTheme();
     setupEventListeners();

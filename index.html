@@ -15,11 +15,8 @@
   <!-- Main Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- External Libraries via CDN (Deferred for performance) -->
+  <!-- Chart.js CDN (Deferred for non-blocking initial paint) -->
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
   <div class="app-container">
@@ -423,8 +420,8 @@
   <!-- Toast Notification Container (Bottom-Right) -->
   <div id="toastContainer" class="toast-container" aria-live="polite"></div>
 
-  <!-- JavaScript Dependencies -->
-  <script src="sample-data.js"></script>
-  <script src="js/app.js"></script>
+  <!-- Application JavaScript (Deferred to prevent rendering blocks) -->
+  <script defer src="sample-data.js"></script>
+  <script defer src="js/app.js"></script>
 </body>
 </html>
