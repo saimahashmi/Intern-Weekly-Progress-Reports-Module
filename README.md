@@ -56,6 +56,21 @@ A corporate, performance-optimized, fully-responsive reporting dashboard module 
 - Export **All Weeks** or a **Specific Week** (Week 1, Week 2, Week 3, Week 4).
 - Export as **CSV (.csv)** with UTF-8 BOM or **Excel (.xls)** with auto-fit column widths based on text length.
 
+## ⚡ Performance & Quality
+
+Audited with Google Lighthouse (Mobile):
+
+| Category         | Score   |
+|-------------------|---------|
+| Performance        | 93 |
+| Accessibility       | 94 |
+| Best Practices      | 100 |
+| SEO                 | 100 |
+
+Achieved through lazy-loading of PDF export libraries (jsPDF, html2canvas, jsPDF-AutoTable — loaded only on first "Download PDF" click), deferred Chart.js initialization, and cleanup of unused CSS.
+
+**Browser Testing:** Verified on Google Chrome (desktop and mobile viewport emulation).
+
 ---
 
 ## 📁 Project File Structure
