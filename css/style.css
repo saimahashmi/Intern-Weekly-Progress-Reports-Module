@@ -1,4 +1,22 @@
+/* ==========================================================================
+   Weekly Progress & Reports Module - Master Stylesheet (SafeX Edition v2.0)
+   Built with CSS Variables, Light/Dark Modes, Mobile Stacked Cards, Modals, 
+   Chart.js Container, Pagination Controls, and Print-Friendly Styles.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. SafeX Design System & CSS Custom Properties
+   -------------------------------------------------------------------------- */
 :root {
+  /* SafeX Corporate Brand Palette - Light Mode */
+  --safex-primary: #0284c7;
+  --safex-hover: #0369a1;
+  --safex-accent: #0ea5e9;
+  --safex-light: #e0f2fe;
+  --safex-badge-bg: linear-gradient(135deg, #0284c7 0%, #0f766e 100%);
+  --safex-badge-text: #ffffff;
+
+  /* Color Palette - Light Mode */
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --card-bg: #ffffff;
@@ -7,55 +25,70 @@
   --text-secondary: #475569;
   --text-muted: #94a3b8;
   --border-color: #cbd5e1;
-  --accent-primary: #2563eb;
-  --accent-hover: #1d4ed8;
-  --accent-light: #eff6ff;
-  --accent-ring: rgba(37, 99, 235, 0.25);
-
+  --accent-primary: #0284c7;
+  --accent-hover: #0369a1;
+  --accent-light: #e0f2fe;
+  --accent-ring: rgba(2, 132, 199, 0.25);
+  
+  /* Status Colors (Light Theme) */
   --status-pending-bg: #fef3c7;
   --status-pending-text: #92400e;
   --status-pending-border: #fcd34d;
-
-  --status-progress-bg: #dbeafe;
-  --status-progress-text: #1e40af;
-  --status-progress-border: #93c5fd;
-
+  
+  --status-progress-bg: #e0f2fe;
+  --status-progress-text: #0369a1;
+  --status-progress-border: #7dd3fc;
+  
   --status-completed-bg: #dcfce7;
   --status-completed-text: #166534;
   --status-completed-border: #86efac;
 
+  /* Action Buttons & Danger States */
   --btn-danger-bg: #dc2626;
   --btn-danger-hover: #b91c1c;
   --btn-danger-light: #fef2f2;
   --btn-danger-text: #991b1b;
 
+  /* Table Header & Hover */
   --table-header-bg: #f1f5f9;
   --table-header-text: #334155;
   --table-row-hover: #f8fafc;
   --table-row-stripe: #fafafa;
 
+  /* Modal Backdrop & Overlay */
   --modal-backdrop: rgba(15, 23, 42, 0.5);
-
+  
+  /* Toast Notification Colors */
   --toast-bg: #1e293b;
   --toast-text: #ffffff;
   --toast-border: #334155;
-
+  
+  /* UI Components */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-lg:
-    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 16px;
   --radius-full: 9999px;
 
-  --theme-transition:
-    background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease,
-    box-shadow 0.3s ease;
+  /* Chart Colors (Light Mode) */
+  --chart-bar-bg: rgba(2, 132, 199, 0.85);
+  --chart-bar-border: #0284c7;
+  --chart-grid: #e2e8f0;
+  --chart-text: #475569;
+
+  /* Transitions */
+  --theme-transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Dark Theme Overrides */
 [data-theme="dark"] {
+  --safex-primary: #38bdf8;
+  --safex-hover: #7dd3fc;
+  --safex-accent: #0ea5e9;
+  --safex-light: rgba(56, 189, 248, 0.15);
+
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
   --card-bg: #1e293b;
@@ -64,35 +97,46 @@
   --text-secondary: #cbd5e1;
   --text-muted: #64748b;
   --border-color: #334155;
-  --accent-primary: #3b82f6;
-  --accent-hover: #60a5fa;
-  --accent-light: rgba(59, 130, 246, 0.15);
-  --accent-ring: rgba(59, 130, 246, 0.3);
+  --accent-primary: #38bdf8;
+  --accent-hover: #7dd3fc;
+  --accent-light: rgba(56, 189, 248, 0.15);
+  --accent-ring: rgba(56, 189, 248, 0.3);
 
+  /* Status Colors (Dark Theme) */
   --status-pending-bg: rgba(217, 119, 6, 0.2);
   --status-pending-text: #fbbf24;
   --status-pending-border: rgba(217, 119, 6, 0.4);
 
-  --status-progress-bg: rgba(37, 99, 235, 0.2);
-  --status-progress-text: #60a5fa;
-  --status-progress-border: rgba(37, 99, 235, 0.4);
+  --status-progress-bg: rgba(2, 132, 199, 0.2);
+  --status-progress-text: #38bdf8;
+  --status-progress-border: rgba(56, 189, 248, 0.4);
 
   --status-completed-bg: rgba(22, 163, 74, 0.2);
   --status-completed-text: #4ade80;
   --status-completed-border: rgba(22, 163, 74, 0.4);
 
+  /* Danger Actions (Dark Theme) */
   --btn-danger-bg: #ef4444;
   --btn-danger-hover: #f87171;
   --btn-danger-light: rgba(239, 68, 68, 0.15);
   --btn-danger-text: #fca5a5;
 
+  /* Table Specifics */
   --table-header-bg: #111827;
   --table-header-text: #9ca3af;
   --table-row-hover: #334155;
   --table-row-stripe: #182234;
 
+  /* Chart Colors (Dark Mode) */
+  --chart-bar-bg: rgba(56, 189, 248, 0.85);
+  --chart-bar-border: #38bdf8;
+  --chart-grid: #334155;
+  --chart-text: #cbd5e1;
+
+  /* Modal Backdrop */
   --modal-backdrop: rgba(0, 0, 0, 0.7);
 
+  /* Toast Notification */
   --toast-bg: #0f172a;
   --toast-text: #f8fafc;
   --toast-border: #334155;
@@ -102,9 +146,10 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
 }
 
-*,
-*::before,
-*::after {
+/* --------------------------------------------------------------------------
+   2. Global Reset & Base Typography
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -116,15 +161,7 @@ html {
 }
 
 body {
-  font-family:
-    "Inter",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.5;
@@ -133,28 +170,64 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Layout Container */
 .app-container {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
 }
 
+/* --------------------------------------------------------------------------
+   3. Header Section & SafeX Branding
+   -------------------------------------------------------------------------- */
 .app-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 2rem;
   gap: 1rem;
 }
 
+.header-brand-container {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+/* SafeX Logo Badge */
+.safex-logo-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--safex-badge-bg);
+  color: var(--safex-badge-text);
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  flex-shrink: 0;
+}
+
+.safex-logo-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.safex-logo-text {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .header-titles h1 {
-  font-size: 1.875rem;
+  font-size: 1.75rem;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.025em;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .header-titles h1 .badge-sub {
@@ -170,10 +243,11 @@ body {
 
 .header-titles p {
   color: var(--text-secondary);
-  font-size: 0.95rem;
-  margin-top: 0.25rem;
+  font-size: 0.925rem;
+  margin-top: 0.2rem;
 }
 
+/* Theme Toggle Button */
 .theme-toggle-btn {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -186,9 +260,7 @@ body {
   justify-content: center;
   cursor: pointer;
   box-shadow: var(--shadow-sm);
-  transition:
-    var(--theme-transition),
-    transform 0.2s ease;
+  transition: var(--theme-transition), transform 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -213,11 +285,14 @@ body {
   stroke-linejoin: round;
 }
 
+/* --------------------------------------------------------------------------
+   4. Stats / Dashboard Summary Cards
+   -------------------------------------------------------------------------- */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1.25rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-card {
@@ -226,9 +301,7 @@ body {
   border-radius: var(--radius-md);
   padding: 1.25rem;
   box-shadow: var(--shadow-sm);
-  transition:
-    var(--theme-transition),
-    transform 0.2s ease;
+  transition: var(--theme-transition), transform 0.2s ease;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -254,22 +327,10 @@ body {
   height: 24px;
 }
 
-.stat-icon.total {
-  background: var(--accent-light);
-  color: var(--accent-primary);
-}
-.stat-icon.hours {
-  background: rgba(147, 51, 234, 0.12);
-  color: #9333ea;
-}
-.stat-icon.completed {
-  background: var(--status-completed-bg);
-  color: var(--status-completed-text);
-}
-.stat-icon.active {
-  background: var(--status-progress-bg);
-  color: var(--status-progress-text);
-}
+.stat-icon.total { background: var(--accent-light); color: var(--accent-primary); }
+.stat-icon.hours { background: rgba(147, 51, 234, 0.12); color: #9333ea; }
+.stat-icon.completed { background: var(--status-completed-bg); color: var(--status-completed-text); }
+.stat-icon.active { background: var(--status-progress-bg); color: var(--status-progress-text); }
 
 .stat-info .stat-value {
   font-size: 1.5rem;
@@ -284,6 +345,54 @@ body {
   font-weight: 500;
 }
 
+/* --------------------------------------------------------------------------
+   5. Chart.js Completion Overview Section
+   -------------------------------------------------------------------------- */
+.chart-card-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.chart-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-sm);
+  transition: var(--theme-transition);
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chart-card-header h3 {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.chart-subtitle {
+  font-size: 0.775rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: var(--bg-primary);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 240px; /* Fixed height to prevent Cumulative Layout Shift */
+}
+
+/* --------------------------------------------------------------------------
+   6. Filter & Control Toolbar (Consolidated Single Row)
+   -------------------------------------------------------------------------- */
 .controls-card {
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -324,8 +433,7 @@ body {
   letter-spacing: 0.05em;
 }
 
-.select-control,
-.search-control {
+.select-control, .search-control {
   background-color: var(--bg-primary);
   border: 1px solid var(--border-color);
   color: var(--text-primary);
@@ -333,28 +441,25 @@ body {
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-family: inherit;
-  min-width: 150px;
-  transition:
-    var(--theme-transition),
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  min-width: 140px;
+  transition: var(--theme-transition), border-color 0.2s ease, box-shadow 0.2s ease;
   outline: none;
 }
 
-.select-control:focus,
-.search-control:focus {
+.select-control:focus, .search-control:focus {
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px var(--accent-ring);
 }
 
 .search-control {
-  min-width: 220px;
+  min-width: 200px;
 }
 
+/* Action Buttons */
 .action-group {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.625rem;
   margin-top: auto;
 }
 
@@ -363,7 +468,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.625rem 1.125rem;
+  padding: 0.625rem 1rem;
   font-size: 0.875rem;
   font-weight: 600;
   border-radius: var(--radius-sm);
@@ -398,7 +503,7 @@ body {
 
 .btn-primary:hover {
   background-color: var(--accent-hover);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
 }
 
 .btn-danger {
@@ -416,6 +521,14 @@ body {
   outline-offset: 2px;
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   7. Weekly Progress Table Component (Top-Aligned Cell Fix)
+   -------------------------------------------------------------------------- */
 .table-card {
   background-color: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -445,10 +558,9 @@ body {
   border-bottom: 1px solid var(--card-border);
   user-select: none;
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
+  vertical-align: top;
 }
 
 .progress-table th.th-actions {
@@ -492,6 +604,7 @@ body {
   background-color: var(--table-row-hover);
 }
 
+/* Vertical Align Top Fix for Table Cells */
 .progress-table td {
   padding: 1rem 1.25rem;
   color: var(--text-primary);
@@ -499,6 +612,7 @@ body {
   text-align: left;
 }
 
+/* Columns specific formatting */
 .td-task {
   font-weight: 600;
   color: var(--text-primary);
@@ -527,7 +641,7 @@ body {
 
 .td-notes {
   color: var(--text-secondary);
-  max-width: 300px;
+  max-width: 320px;
   line-height: 1.4;
 }
 
@@ -536,6 +650,7 @@ body {
   white-space: nowrap;
 }
 
+/* Row Action Buttons (Edit & Delete) */
 .action-btn-group {
   display: inline-flex;
   align-items: center;
@@ -574,6 +689,7 @@ body {
   border-color: var(--btn-danger-bg);
 }
 
+/* Status Badges */
 .status-badge {
   display: inline-flex;
   align-items: center;
@@ -599,28 +715,117 @@ body {
   color: var(--status-pending-text);
   border-color: var(--status-pending-border);
 }
-.status-pending::before {
-  background-color: var(--status-pending-text);
-}
+.status-pending::before { background-color: var(--status-pending-text); }
 
 .status-in-progress {
   background-color: var(--status-progress-bg);
   color: var(--status-progress-text);
   border-color: var(--status-progress-border);
 }
-.status-in-progress::before {
-  background-color: var(--status-progress-text);
-}
+.status-in-progress::before { background-color: var(--status-progress-text); }
 
 .status-completed {
   background-color: var(--status-completed-bg);
   color: var(--status-completed-text);
   border-color: var(--status-completed-border);
 }
-.status-completed::before {
-  background-color: var(--status-completed-text);
+.status-completed::before { background-color: var(--status-completed-text); }
+
+/* --------------------------------------------------------------------------
+   8. Pagination Controls Component
+   -------------------------------------------------------------------------- */
+.pagination-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--card-border);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
+.pagination-info {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.rows-per-page-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.825rem;
+}
+
+.rows-select-control {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.825rem;
+  outline: none;
+}
+
+.pagination-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.page-btn {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  min-width: 34px;
+  height: 34px;
+  padding: 0 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.825rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.page-btn:hover:not(:disabled) {
+  background-color: var(--table-header-bg);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+.page-btn.active {
+  background-color: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #ffffff;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--card-border);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   9. Modals (Task Form, Delete Confirm, Export Scope)
+   -------------------------------------------------------------------------- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -635,9 +840,7 @@ body {
   justify-content: center;
   opacity: 0;
   visibility: hidden;
-  transition:
-    opacity 0.25s ease,
-    visibility 0.25s ease;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
   padding: 1rem;
 }
 
@@ -656,9 +859,7 @@ body {
   max-height: 90vh;
   overflow-y: auto;
   transform: translateY(20px);
-  transition:
-    transform 0.25s ease,
-    var(--theme-transition);
+  transition: transform 0.25s ease, var(--theme-transition);
 }
 
 .modal-content.modal-sm {
@@ -747,9 +948,7 @@ body {
   font-family: inherit;
   width: 100%;
   outline: none;
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-control:focus {
@@ -794,6 +993,9 @@ body {
   background-color: var(--bg-secondary);
 }
 
+/* --------------------------------------------------------------------------
+   10. Toast Notifications
+   -------------------------------------------------------------------------- */
 .toast-container {
   position: fixed;
   bottom: 1.5rem;
@@ -822,9 +1024,7 @@ body {
   max-width: 420px;
   transform: translateY(20px);
   opacity: 0;
-  transition:
-    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-    opacity 0.3s ease;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
 }
 
 .toast.show {
@@ -832,19 +1032,14 @@ body {
   opacity: 1;
 }
 
-.toast-success {
-  border-left: 4px solid #22c55e;
-}
-.toast-error {
-  border-left: 4px solid #ef4444;
-}
-.toast-warning {
-  border-left: 4px solid #f59e0b;
-}
-.toast-info {
-  border-left: 4px solid #3b82f6;
-}
+.toast-success { border-left: 4px solid #22c55e; }
+.toast-error { border-left: 4px solid #ef4444; }
+.toast-warning { border-left: 4px solid #f59e0b; }
+.toast-info { border-left: 4px solid #3b82f6; }
 
+/* --------------------------------------------------------------------------
+   11. Empty State View
+   -------------------------------------------------------------------------- */
 .empty-state {
   padding: 3.5rem 1.5rem;
   text-align: center;
@@ -886,17 +1081,9 @@ body {
   margin: 0 auto 1.25rem auto;
 }
 
-.table-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.875rem 1.25rem;
-  background-color: var(--bg-secondary);
-  border-top: 1px solid var(--card-border);
-  font-size: 0.825rem;
-  color: var(--text-secondary);
-}
-
+/* --------------------------------------------------------------------------
+   12. Responsive Layout & Mobile Stacked Card View (< 768px)
+   -------------------------------------------------------------------------- */
 @media (max-width: 1024px) {
   .app-container {
     padding: 1.5rem 1rem;
@@ -905,8 +1092,8 @@ body {
 
 @media (max-width: 768px) {
   .app-header {
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   .controls-wrapper {
@@ -919,8 +1106,7 @@ body {
     align-items: stretch;
   }
 
-  .select-control,
-  .search-control {
+  .select-control, .search-control {
     width: 100%;
     min-width: 0;
   }
@@ -936,11 +1122,17 @@ body {
     min-width: 120px;
   }
 
-  .progress-table,
-  .progress-table thead,
-  .progress-table tbody,
-  .progress-table th,
-  .progress-table td,
+  .pagination-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* Table Mobile Card Transformation */
+  .progress-table, 
+  .progress-table thead, 
+  .progress-table tbody, 
+  .progress-table th, 
+  .progress-table td, 
   .progress-table tr {
     display: block;
   }
@@ -1040,5 +1232,112 @@ body {
 
   .td-actions {
     align-items: flex-start;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. Print-Friendly Stylesheet (@media print)
+   -------------------------------------------------------------------------- */
+@media print {
+  body {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    font-size: 12pt;
+  }
+
+  .app-container {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Hide interactive controls, buttons, theme switcher, toasts, and pagination */
+  .controls-card,
+  .theme-toggle-btn,
+  .action-btn-group,
+  .th-actions,
+  .td-actions,
+  .pagination-container,
+  .modal-overlay,
+  .toast-container,
+  .badge-sub {
+    display: none !important;
+  }
+
+  .app-header {
+    border-bottom: 2px solid #0284c7;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .stat-card {
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    padding: 0.5rem !important;
+  }
+
+  .chart-card-wrapper {
+    margin-bottom: 1.5rem !important;
+    page-break-inside: avoid;
+  }
+
+  .chart-card {
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  .chart-container {
+    height: 200px !important;
+  }
+
+  /* Force table display */
+  .table-card {
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  .progress-table {
+    display: table !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .progress-table thead {
+    display: table-header-group !important;
+  }
+
+  .progress-table tbody {
+    display: table-row-group !important;
+  }
+
+  .progress-table tbody tr {
+    display: table-row !important;
+    page-break-inside: avoid;
+    border-bottom: 1px solid #cbd5e1 !important;
+    background-color: transparent !important;
+  }
+
+  .progress-table th, .progress-table td {
+    display: table-cell !important;
+    padding: 0.5rem !important;
+    font-size: 9pt !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #000000 !important;
+  }
+
+  .progress-table td::before {
+    display: none !important; /* Hide mobile data-label pseudo elements */
+  }
+
+  .status-badge {
+    border: 1px solid #94a3b8 !important;
+    color: #000000 !important;
+    background: transparent !important;
   }
 }
